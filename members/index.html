@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <title>Certified Members</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+        letter-spacing: 1.2px;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        text-align: center;
+      }
+
+      #cards {
+        padding-top: 50px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+      }
+
+      .user-card {
+        width: fit-content;
+        margin-bottom: 30px;
+        padding: 30px 20px;
+        color: white;
+        background-color: #1977cc;
+        width: 30%;
+        box-shadow: 5px 5px 15px #1977cc;
+      }
+
+      .info-container {
+        display: flex;
+      }
+
+      i {
+        margin-right: 15px;
+      }
+
+      button {
+        padding: 10px;
+        border-radius: 50px;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        overflow: auto;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        hyphens: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="cards"></div>
+    <button id="viewMore">View More</button>
+  </body>
+
+  <script>
+    let pageNo = 0;
+    let createCard = (card, pos) => {
+      console.log(card, pos);
+      let div = document.createElement("div");
+      div.classList.add("user-card");
+      div.innerHTML = `
+            <div class="info-container">
+              <i class="far fa-user"></i>
+              <h2 class="name">Name</h2>
+            </div>
+            <br />
+            <div class="info-container">
+              <i class="fas fa-user-tag"></i>
+              <h3 class="designation">Designation</h3>
+            </div>
+            <br />
+            <div class="info-container">
+              <i class="far fa-envelope"></i>
+              <h4 class="email">email</h4>
+            </div>
+            <br />
+            <div class="info-container">
+              <i class="fas fa-phone"></i>
+              <h4 class="phone">phone</h4>
+            </div>`;
+
+      div.getElementsByClassName("name")[0].textContent = card.userName;
+      div.getElementsByClassName("designation")[0].textContent =
+        card.designation;
+      div.getElementsByClassName("phone")[0].textContent = card.phoneNumber;
+      div.getElementsByClassName("email")[0].textContent = card.email;
+      return div;
+    };
+
+    let appendCards = (cardsData) => {
+      cardsData.map((card, idx) => {
+        console.log("appending", card);
+        document.getElementById("cards").appendChild(createCard(card, idx));
+      });
+    };
+
+    let loadCards = () => {
+      fetch("https://clinic21st.herokuapp.com/user/page?page=" + pageNo, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          authorization:
+            "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkZXZicmF0ZGFzaDE5OThAZ21haWwuY29tIiwiaXNzIjoiaHR0cDovL3d3dy5jbGluaWMyMXN0LmNvbSIsImlhdCI6MTYzMjU4MTcyMSwiZXhwIjoxNjMyNjY4MTIxfQ.OKbX7fR35YZkU0_1-5Ov1mie8wt-QIu15oscl9851g0",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          appendCards(data);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    };
+
+    const init = () => {
+      document.getElementById("viewMore").addEventListener("click", () => {
+        pageNo++;
+        loadCards();
+      });
+      loadCards()
+    };
+    window.addEventListener("load", init);
+  </script>
+</html>
